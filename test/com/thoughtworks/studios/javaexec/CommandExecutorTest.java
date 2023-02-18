@@ -20,7 +20,7 @@ public class CommandExecutorTest {
   public void captureOutputWhenStreamingToOutputStream() {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"echo", "foobar"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream);
     assertThat(outputStream.toString(), equalTo("foobar"));
   }
@@ -30,7 +30,7 @@ public class CommandExecutorTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     ByteArrayOutputStream errorOutputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"echo", "foobar"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream, errorOutputStream);
     assertThat(outputStream.toString(), equalTo("foobar"));
     assertThat(errorOutputStream.toString(), equalTo(""));
@@ -40,7 +40,7 @@ public class CommandExecutorTest {
   public void captureErrorWhenStreamingToOutputStream() {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"error", "something went wrong", "173"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream);
 
     assertThat(exec.isError(), equalTo(true));
@@ -53,7 +53,7 @@ public class CommandExecutorTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     ByteArrayOutputStream errorOutputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"error", "something went wrong", "173"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream, errorOutputStream);
 
     assertThat(exec.isError(), equalTo(true));
@@ -68,7 +68,7 @@ public class CommandExecutorTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     ByteArrayOutputStream errorOutputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"error", "something went wrong", "173"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream, errorOutputStream);
 
     assertThat(exec.isError(), equalTo(true));
@@ -81,7 +81,7 @@ public class CommandExecutorTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     ByteArrayOutputStream errorOutputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"tee", "something went both to stdout and stderr"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream, errorOutputStream);
 
     assertThat(exec.isError(), equalTo(false));
@@ -94,7 +94,7 @@ public class CommandExecutorTest {
   public void timeoutWhenStreamingtoOutputStream() {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"sleep", "5000"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd), 100L);
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd), 100L);
     try {
       exec.run(outputStream);
       fail("should have timed out!");
@@ -108,7 +108,7 @@ public class CommandExecutorTest {
   public void captureOutputWhenStreamingToLineHandler() {
     TestLineHandler lineHandler = new TestLineHandler();
     String[] cmd = TestProgram.cmdFor(new String[]{"echo", "foo\nbar\n"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(lineHandler);
     String[] expectedLines = new String[]{"foo", "bar"};
     lineHandler.assertLinesEqual(Arrays.asList(expectedLines));
@@ -117,7 +117,7 @@ public class CommandExecutorTest {
   @Test
   public void captureOutputWithoutStreaming() {
     String[] cmd = TestProgram.cmdFor(new String[]{"echo", "foobar"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     assertThat(exec.run(), equalTo("foobar"));
   }
 
@@ -125,7 +125,7 @@ public class CommandExecutorTest {
   public void captureChineseOutputWhenStreamingToOutputStream() throws Exception {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     String[] cmd = TestProgram.cmdFor(new String[]{"chinese"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(outputStream);
     assertThat(outputStream.toString("UTF-8"), equalTo("这是中文"));
   }
@@ -134,7 +134,7 @@ public class CommandExecutorTest {
   public void captureChineseOutputWhenStreamingToLineHandler() {
     TestLineHandler lineHandler = new TestLineHandler();
     String[] cmd = TestProgram.cmdFor(new String[]{"chinese"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     exec.run(lineHandler);
     String[] expectedLines = new String[]{"这是中文"};
     lineHandler.assertLinesEqual(Arrays.asList(expectedLines));
@@ -143,7 +143,7 @@ public class CommandExecutorTest {
   @Test
   public void captureChineseOutputWhenNotStreaming() {
     String[] cmd = TestProgram.cmdFor(new String[]{"chinese"});
-    CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd));
+    CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd));
     assertThat(exec.run(), equalTo("这是中文"));
   }
 
@@ -153,7 +153,7 @@ public class CommandExecutorTest {
     assertTrue(workingDir.mkdir());
     try {
       String[] cmd = TestProgram.cmdFor(new String[]{"pwd"});
-      CommandExecutor exec = new CommandExecutor(Arrays.asList(cmd), workingDir.getPath());
+      CommandExecutor exec = new TestCommandExecutor(Arrays.asList(cmd), workingDir.getPath());
       assertTrue(exec.run().endsWith(workingDir.getPath()));
     } finally {
       assertTrue(workingDir.delete());

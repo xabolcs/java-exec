@@ -4,6 +4,7 @@ package com.thoughtworks.studios.javaexec;
 
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 public class CommandExecutor {
 
@@ -76,8 +77,12 @@ public class CommandExecutor {
 
   private Process launchProcess() throws IOException {
     ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+    processEnvironment(processBuilder.environment());
     if (workingDirectory != null) processBuilder.directory(new File(workingDirectory));
     return processBuilder.start();
+  }
+
+  protected void processEnvironment(Map<String, String> environment) {
   }
 
   public String run() {
